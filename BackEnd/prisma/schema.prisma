@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+        
+model User {
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  password String
+  createdAt DateTime @default(now())
+
+  // New relations
+  assignedTodos Todo[] @relation("AssignedTodos")
+  createdTodos  Todo[] @relation("CreatedTodos")
+}
+
+
+model Todo {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  status      TodoStatus @default(OPEN)
+
+  // Assignee
+  user        User       @relation("AssignedTodos", fields: [userId], references: [id])
+  userId      Int
+
+  // Creator
+  createdBy   User       @relation("CreatedTodos", fields: [createdById], references: [id])
+  createdById Int
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+
+enum TodoStatus {
+  OPEN
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
