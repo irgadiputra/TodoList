@@ -84,7 +84,7 @@ export async function GetTodoListService(param: GetTodoListParam) {
       ...(param.creatorId && { createdById: param.creatorId }),
       ...(param.status && { status: param.status }),
     };
-
+    
     const [todos, total] = await prisma.$transaction([
       prisma.todo.findMany({
         where,

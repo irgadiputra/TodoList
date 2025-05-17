@@ -7,6 +7,7 @@ import {
 } from "../services/auth.service";
 import { IUserReqParam } from "../custom";
 import { verify } from "jsonwebtoken";
+import { HttpError } from "../utils/httpError";
 
 
 export async function RegisterController(
@@ -15,14 +16,20 @@ export async function RegisterController(
   next: NextFunction
 ) {
   try {
-    await RegisterService(req.body);
+    const data = await RegisterService(req.body);
 
     res.status(200).send({
-      message: "Register Berhasil",
-    });
-  } catch (err) {
-    next(err);
-  }
+        message: "Register Berhasil",
+        data,
+      });
+    } catch (err) {
+      if (err instanceof HttpError) {
+        res.status(err.status).send({ message: err.message });
+      } else {
+        res.status(500).send({ message: "Internal Server Error" });
+        next()
+      }
+    }
 }
 
 export async function LoginController(
@@ -36,9 +43,15 @@ export async function LoginController(
     res.status(200).cookie("access_token", data.token).send({
       message: "Login Berhasil",
       user: data.user,
+      token: data.token
     });
   } catch (err) {
-    next(err);
+    if (err instanceof HttpError) {
+      res.status(err.status).send({ message: err.message });
+    } else {
+      res.status(500).send({ message: "Internal Server Error" });
+      next()
+    }
   }
 }
 

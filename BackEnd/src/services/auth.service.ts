@@ -3,6 +3,7 @@ import prisma from "../lib/prisma";
 import { hash, genSaltSync, compare } from "bcryptjs";
 import { SECRET_KEY } from "../config";
 import { LoginParam, RegisterParam, UpdateProfileParam } from "../type/auth.type";
+import { HttpError } from "../utils/httpError";
 
 async function FindUserByEmail(email: string) {
   try {
@@ -26,7 +27,7 @@ async function FindUserByEmail(email: string) {
 async function RegisterService(param: RegisterParam & { referral_code?: string }) {
   try {
     const isExist = await FindUserByEmail(param.email);
-    if (isExist) throw new Error("Email is registered");
+    if (isExist) throw new HttpError(409, "Email sudah terdaftar");
 
     const salt = genSaltSync(10);
     const hashedPassword = await hash(param.password, salt);
@@ -49,16 +50,15 @@ async function LoginService(param: LoginParam) {
   try {
     const user = await FindUserByEmail(param.email);
 
-    if (!user) throw new Error("Email is not registered");
+    if (!user) throw new HttpError(404, "Email tidak terdaftar");
 
     const checkPass = await compare(param.password, user.password);
-
-    if (!checkPass) throw new Error("Wrong Password");
+    
+    if (!checkPass) throw new HttpError(401, "Password Salah");
 
     const payload = {
       email: user.email,
       name: user.name,
-      id: user.id,
     }
 
     const token = sign(payload, String(SECRET_KEY), { expiresIn: "1h" });

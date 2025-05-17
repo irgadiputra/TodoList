@@ -8,23 +8,21 @@ import { Formik, Form, Field, FormikProps } from 'formik';
 import registerSchema from '@/pages/register-page/components/schema';
 import Link from 'next/link';
 import { AiOutlineClose } from 'react-icons/ai';
+import { apiUrl } from '@/pages/config';
 
 export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [errorMessages, setErrorMessages] = useState<{ email?: string; referral_code?: string }>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null); // Success message state
-  const [emailVerificationSent, setEmailVerificationSent] = useState(false); // Flag for email verification sent
+  const [IsRegistered, setIsRegistered] = useState(false); // Flag for email verification sent
   const router = useRouter();
 
   const initialValue: IRegister = {
-    first_name: '',
-    last_name: '',
+    name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    status_role: '',
-    referral_code: '',
   };
 
   const register = async (values: IRegister) => {
@@ -32,9 +30,9 @@ export default function RegisterForm() {
       setLoading(true);
       setErrorMessages({});
       setSuccessMessage(null);
-      const { data } = await axios.post('http://localhost:8080/auth/register', values);
-      setEmailVerificationSent(true); // Set the flag when registration is successful
-      setSuccessMessage('Registration successful! Please check your email to verify your account.');
+      const { data } = await axios.post(`${apiUrl}/auth/register`, values);
+      setIsRegistered(true); // Set the flag when registration is successful
+      setSuccessMessage('Registration success!');
       setTimeout(() => {
         router.push('/login'); // Redirect after 5 seconds or immediately
       }, 5000);
@@ -43,8 +41,6 @@ export default function RegisterForm() {
       const errorMessage = err?.response?.data?.message || 'Registration failed. Please try again.';
       if (statusCode === 409) {
         setErrorMessages((prev) => ({ ...prev, email: 'Email already registered.' }));
-      } else if (statusCode === 400) {
-        setErrorMessages((prev) => ({ ...prev, referral_code: 'Invalid referral code.' }));
       } else {
         alert(errorMessage);
       }
@@ -93,10 +89,9 @@ export default function RegisterForm() {
         validationSchema={registerSchema}
         validateOnBlur={false}
         validateOnChange={false}
-        onSubmit={(values, { resetForm, setSubmitting }) => {
+        onSubmit={(values, { setSubmitting }) => {
           setIsSubmitted(true);
           register(values);
-          resetForm();
           setSubmitting(false);
         }}
       >
@@ -121,54 +116,20 @@ export default function RegisterForm() {
 
               <h2 className="text-2xl font-semibold text-slate-800 mb-4">Create an Account</h2>
 
-              {emailVerificationSent && (
+              {IsRegistered && (
                 <div className="bg-green-100 text-green-800 p-3 rounded-md text-sm mb-4">
                   <p>{successMessage}</p>
                   <p>Redirecting you to the login page...</p>
                 </div>
               )}
 
-              <div className="flex flex-col md:flex-row gap-4">
-                <InputField label="First Name:*" name="first_name" value={values.first_name} handleChange={handleChange} handleFocus={handleFocus} error={errors.first_name} touched={touched.first_name} />
-                <InputField label="Last Name:*" name="last_name" value={values.last_name} handleChange={handleChange} handleFocus={handleFocus} error={errors.last_name} touched={touched.last_name} />
-              </div>
-
+              <InputField label="First Name:*" name="name" value={values.name} handleChange={handleChange} handleFocus={handleFocus} error={errors.name} touched={touched.name} />
+                
               <InputField label="E-Mail:*" name="email" type="email" value={values.email} handleChange={handleChange} handleFocus={handleFocus} error={errors.email || errorMessages.email} touched={touched.email} />
 
               <InputField label="Password:*" name="password" type="password" value={values.password} handleChange={handleChange} handleFocus={handleFocus} error={errors.password} touched={touched.password} />
 
               <InputField label="Confirm Password:*" name="confirmPassword" type="password" value={values.confirmPassword} handleChange={handleChange} handleFocus={handleFocus} error={errors.confirmPassword} touched={touched.confirmPassword} />
-
-              <div className="flex flex-col">
-                <label className="text-sm font-medium text-slate-700 mb-1">Role:*</label>
-                <div className="flex gap-6">
-                  {['customer', 'organiser'].map((role) => (
-                    <label key={role} className="flex items-center text-sm text-slate-700">
-                      <Field
-                        type="radio"
-                        name="status_role"
-                        value={role}
-                        className="accent-blue-500"
-                        onFocus={() => handleFocus('status_role')}
-                      />
-                      <span className="ml-2 capitalize">{role}</span>
-                    </label>
-                  ))}
-                </div>
-                {(isSubmitted || touched.status_role) && errors.status_role && (
-                  <div className="text-red-600 text-xs mt-1">{errors.status_role}</div>
-                )}
-              </div>
-
-              <InputField
-                label="Referral Code:"
-                name="referral_code"
-                value={values.referral_code}
-                handleChange={handleChange}
-                handleFocus={handleFocus}
-                error={errorMessages.referral_code}
-                touched={touched.referral_code}
-              />
 
               <button
                 type="submit"

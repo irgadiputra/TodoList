@@ -1,6 +1,6 @@
 'use client';
 
-import { useAppSelector } from '@/lib/redux/hooks';
+import { useAppSelector } from '@/lib/redux/hooks'; // Importing Redux hook to access state
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { FaSearch, FaCompass, FaUserCircle } from 'react-icons/fa';
@@ -11,7 +11,7 @@ import { apiUrl } from '@/pages/config';
 const UserMenuItems = React.lazy(() => import('./userMenuItems'));
 
 export default function Navbar() {
-  const auth = useAppSelector((state) => state.auth);
+  const auth = useAppSelector((state) => state.auth); // Get auth state from Redux
   const router = useRouter();
 
   const [showSearch, setShowSearch] = useState(false);
@@ -122,16 +122,8 @@ export default function Navbar() {
                   onClick={() => setShowUserMenu((prev) => !prev)}
                   className="flex items-center gap-2"
                 >
-                  {auth.user?.profile_pict ? (
-                    <img
-                      src={`${apiUrl}${auth.user.profile_pict}`}
-                      alt="Avatar"
-                      className="w-8 h-8 rounded-full"
-                    />
-                  ) : (
-                    <FaUserCircle size={30} />
-                  )}
-                  {auth.user?.first_name} {auth.user?.last_name}
+                  {<FaUserCircle size={30} />}
+                  {auth.user?.name}
                 </button>
               </div>
               {showUserMenu && (

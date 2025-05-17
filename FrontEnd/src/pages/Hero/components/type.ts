@@ -1,19 +1,45 @@
-export interface IOrganizer {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email?: string;
+import { IUser } from "@/lib/redux/features/authSlices";
+
+export interface ITodo {
+  id: number;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+  quota: number;
+  userId: number,
+  createdById: number,
+  createdAt: string,
+  updatedAt: string,
+  user: IUser,
+  createdBy: IUser
 }
 
-export interface IEvent {
-  name: string;
-  price: number;
-  image: string;
-  location: string;
-  start_date: string;
-  end_date: string;
-  quota: number;
-  status: string;
-  description: string;
-  organizer: IOrganizer;
+export interface IGetTodoListParam {
+    page?: number;
+    limit?: number;
+    userId?: number;     // Assignee
+    creatorId?: number;  // Creator
+    status?: TodoStatus;
+};
+
+export interface ITodoList {
+  data: ITodo[],
+  paginiation : IPaginationTodo
+}
+
+export interface IPaginationTodo {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+enum TodoStatus {
+  OPEN,
+  PENDING,
+  IN_PROGRESS,
+  COMPLETED,
+  CANCELLED
 }
