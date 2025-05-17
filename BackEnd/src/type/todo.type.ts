@@ -19,6 +19,7 @@ export type UpdateTodoParam = {
 };
 
 export type GetTodoListParam = {
+    id?: number;
     page?: number;
     limit?: number;
     userId?: number;     // Assignee

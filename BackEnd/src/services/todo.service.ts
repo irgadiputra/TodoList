@@ -80,11 +80,11 @@ export async function GetTodoListService(param: GetTodoListParam) {
     const skip = (page - 1) * limit;
 
     const where = {
+      ...(param.id && { id: param.id }),
       ...(param.userId && { userId: param.userId }),
       ...(param.creatorId && { createdById: param.creatorId }),
       ...(param.status && { status: param.status }),
     };
-    
     const [todos, total] = await prisma.$transaction([
       prisma.todo.findMany({
         where,

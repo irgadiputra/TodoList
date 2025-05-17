@@ -36,10 +36,10 @@ export interface IPaginationTodo {
   totalPages: number;
 }
 
-enum TodoStatus {
-  OPEN,
-  PENDING,
-  IN_PROGRESS,
-  COMPLETED,
-  CANCELLED
+export enum TodoStatus {
+  OPEN = "OPEN",
+  PENDING = "PENDING",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED"
 }

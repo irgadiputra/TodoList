@@ -75,9 +75,10 @@ export async function GetTodoListController(
 }
 
 function parseGetTodoListParams(req: Request) : GetTodoListParam {
-  const { page, limit, userId, creatorId, status } = req.query;
+  const { page, limit, userId, creatorId, status, id } = req.query;
 
   return {
+    id: id ? parseInt(id as string, 10) : undefined,
     page: page ? parseInt(page as string, 10) : undefined,
     limit: limit ? parseInt(limit as string, 10) : undefined,
     userId: userId ? parseInt(userId as string, 10) : undefined,
