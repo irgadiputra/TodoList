@@ -9,16 +9,9 @@ import { jwtDecode } from "jwt-decode"; // Assuming jwt-decode is used
 
 interface DecodedToken {
   email: string;
-  first_name: string;
-  last_name: string;
-  id: number;
-  profile_pict: string;
+  name: string;
   exp?: number;
   iat?: number;
-  is_verified?: boolean;
-  point?: number;
-  referal_code?: string;
-  status_role?: 'customer' | 'organiser' | null;
 }
 
 export default function Auth({ children }: { children: React.ReactNode }) {
@@ -51,7 +44,7 @@ export default function Auth({ children }: { children: React.ReactNode }) {
       }
 
       // Validate the token structure (ensure `user` data is available)
-      if (!decoded.email || !decoded.first_name || !decoded.last_name) {
+      if (!decoded.email || !decoded.name) {
         console.warn("Invalid token payload:", decoded);
         showError("Invalid token, please log in again.");
         dispatch(onLogout()); // Clear user state in Redux
@@ -63,14 +56,7 @@ export default function Auth({ children }: { children: React.ReactNode }) {
       dispatch(onLogin({
         user: { 
           email: decoded.email,
-          first_name: decoded.first_name,
-          last_name: decoded.last_name,
-          id: decoded.id,
-          profile_pict: decoded.profile_pict,
-          is_verified: decoded.is_verified || false,
-          point: decoded.point || 0,
-          referal_code: decoded.referal_code || '',
-          status_role: decoded.status_role || null 
+          name: decoded.name,
         },
         token: token,
       }));

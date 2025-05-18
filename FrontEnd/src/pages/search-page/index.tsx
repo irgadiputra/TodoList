@@ -6,6 +6,7 @@ import axios from 'axios';
 import { IEvent } from './components/type';
 import { apiUrl } from '../config';
 import { AiOutlineClose } from 'react-icons/ai';
+import { ITodo } from '../Hero/components/type';
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
@@ -17,7 +18,7 @@ export default function SearchPage() {
   const page = Number(searchParams?.get('page') || 1);
   const limit = 10;
 
-  const [events, setEvents] = useState<IEvent[]>([]);
+  const [events, setEvents] = useState<ITodo[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -40,17 +41,15 @@ export default function SearchPage() {
       try {
         setLoading(true); // Show loading while fetching events
 
-        const res = await axios.get(`${apiUrl}/event/search`, {
+        const res = await axios.get(`${apiUrl}/todo`, {
           params: {
-            name: query,
-            location,
-            status,
+            title: query,
             page,
             limit,
           },
         });
 
-        setEvents(res.data.data);
+        setEvents(res.data.data.data);
         setTotalCount(res.data.totalCount);
       } catch (error) {
         console.error('Failed to fetch events:', error);
@@ -79,6 +78,10 @@ export default function SearchPage() {
 
   const totalPages = totalCount ? Math.ceil(totalCount / limit) : 1;
 
+  const handleViewDetails = (id: number) => {
+    router.push(`/todo/${id}`);
+  };
+
   return (
     <div className="p-4 max-w-4xl mx-auto relative">
       {/* Close Button */}
@@ -102,25 +105,26 @@ export default function SearchPage() {
           {events.map((event) => (
             <div key={event.id} className="p-4 bg-white rounded-lg shadow-md">
               <div className="flex flex-col sm:flex-row gap-4">
-                <img
-                  src={`${apiUrl}${event.image}`}
-                  alt={event.name}
-                  className="w-full sm:w-24 h-24 object-cover rounded-md mb-4 sm:mb-0"
-                />
                 <div className="flex flex-col justify-between">
-                  <h2 className="text-xl font-semibold text-gray-800">{event.name}</h2>
-                  <p className="text-gray-600">
-                    <strong>Location:</strong> {event.location}
-                  </p>
+                  <h2 className="text-xl font-semibold text-gray-800">{event.title}</h2>
                   <p className="text-gray-600">
                     <strong>Status:</strong> {capitalizeFirstLetter(event.status)}
                   </p>
                   <p className="text-gray-600">
-                    <strong>Date:</strong> {formatDate(event.start_date)} - {formatDate(event.end_date)}
+                    <strong>Date:</strong> {formatDate(event.startDate)} - {formatDate(event.endDate)}
                   </p>
                   <p className="text-gray-600">
-                    <strong>Organizer:</strong> {event.organizer}
+                    <strong>Assigne:</strong> {capitalizeFirstLetter(event.user.name)}
                   </p>
+                  <div className="mt-4">
+                    <button
+                      onClick={() => handleViewDetails(event.id)}
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded transition"
+                      aria-label={`View details of ${event.title}`}
+                    >
+                      View Details
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

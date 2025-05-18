@@ -12,9 +12,7 @@ import { ClipLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 
 import { useProfileFormValues } from '../hooks/useProfileFormValues';
-import { useImageUpload } from '../hooks/useImageUpload';
 import { useAuthRedirect } from '../hooks/useAuthRedirect';
-import { ProfilePictureUploader } from './ProfilePictureUploader';
 import { AiOutlineClose } from 'react-icons/ai';
 
 export default function ProfileForm() {
@@ -23,7 +21,6 @@ export default function ProfileForm() {
   const auth = useAppSelector((state) => state.auth);
 
   const { initialValues, hasChanges } = useProfileFormValues();
-  const { file, filePreview, setFilePreview, handleFileChange } = useImageUpload(auth.user.profile_pict ? `${apiUrl}${auth.user.profile_pict}` : '/default-avatar.png');
   const isAuthorized = useAuthRedirect();
 
   const [loading, setLoading] = useState(false);
@@ -38,37 +35,34 @@ export default function ProfileForm() {
         return;
       }
 
-      const formData = new FormData();
-      if (values.first_name !== initialValues.first_name) formData.append('first_name', values.first_name);
-      if (values.last_name !== initialValues.last_name) formData.append('last_name', values.last_name);
-      if (values.email !== initialValues.email) formData.append('email', values.email);
-      if (file) formData.append('profile_pict', file);
-      if (values.new_password) formData.append('new_password', values.new_password);
-      if (values.old_password) formData.append('old_password', values.old_password);
+      const updatedFields: Record<string, string> = {};
 
-      const response = await axios.patch(`${apiUrl}/auth/user`, formData, {
+      if (values.name !== initialValues.name) updatedFields.name = values.name;
+      if (values.email !== initialValues.email) updatedFields.email = values.email;
+      if (values.new_password) updatedFields.new_password = values.new_password;
+      if (values.old_password) updatedFields.old_password = values.old_password;
+
+
+      const response = await axios.patch(`${apiUrl}/auth/user`, updatedFields, {
         headers: {
           Authorization: `Bearer ${auth.token}`,
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
       });
+
 
       dispatch(onLogin({
         ...auth.user,
         ...response.data,
-        profile_pict: response.data.profile_pict || auth.user.profile_pict,
         isLogin: true,
         token: auth.token,
       }));
-
-      setFilePreview(response.data.profile_pict ? `${apiUrl}${response.data.profile_pict}` : filePreview);
 
       toast.success('Profile updated successfully');
       router.push('/');
     } catch (err) {
       console.error('Failed to update profile:', err);
       toast.error('Failed to update profile');
-      setFilePreview(filePreview);
     } finally {
       setSubmitting(false);
     }
@@ -128,14 +122,8 @@ export default function ProfileForm() {
 
   if (isAuthorized !== true) return null;
 
-  const statusRoleStyles = auth.user.status_role === 'customer'
-    ? 'bg-blue-100 text-blue-700'
-    : auth.user.status_role === 'organiser'
-    ? 'bg-green-100 text-green-700'
-    : 'bg-gray-100 text-gray-600';
-
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 transition-all duration-300">
+    <div className="flex text-black justify-center items-center min-h-screen bg-gray-50 transition-all duration-300">
       <div className="w-full max-w-md p-8 bg-white shadow-lg rounded-lg relative">
         <button
           type="button"
@@ -144,13 +132,6 @@ export default function ProfileForm() {
         >
           <AiOutlineClose />
         </button>
-
-        <div className="flex flex-col items-center mb-6">
-          <ProfilePictureUploader filePreview={filePreview} onChange={handleFileChange} />
-          <h3 className="mt-4 text-xl font-semibold text-gray-800">
-            {auth.user.first_name} {auth.user.last_name}
-          </h3>
-        </div>
 
         <Formik
           initialValues={initialValues}
@@ -162,14 +143,8 @@ export default function ProfileForm() {
             <Form className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700">First Name</label>
-                <Field name="first_name" className="w-full p-4 border border-gray-300 rounded-lg" />
-                <ErrorMessage name="first_name" component="div" className="text-sm text-red-500" />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Last Name</label>
-                <Field name="last_name" className="w-full p-4 border border-gray-300 rounded-lg" />
-                <ErrorMessage name="last_name" component="div" className="text-sm text-red-500" />
+                <Field name="name" className="w-full p-4 border border-gray-300 rounded-lg" />
+                <ErrorMessage name="name" component="div" className="text-sm text-red-500" />
               </div>
 
               <div>
@@ -191,52 +166,9 @@ export default function ProfileForm() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Status Role</label>
-                <div className={`w-full p-4 border border-gray-300 rounded-lg ${statusRoleStyles}`}>
-                  {auth.user.status_role || 'Not assigned'}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Referral Code</label>
-                <div className="w-full p-4 border border-gray-300 rounded-lg bg-gray-100 text-gray-600">
-                  {auth.user.referal_code || 'No referral code'}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Points</label>
-                <div className="w-full p-4 border border-gray-300 rounded-lg bg-gray-100 text-gray-600">
-                  {auth.user.point}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Verification Status</label>
-                <div className={`w-full p-4 border border-gray-300 rounded-lg ${
-                  auth.user.is_verified ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                }`}>
-                  {auth.user.is_verified ? 'Verified' : 'Not Verified'}
-                </div>
-              </div>
-
-              {!auth.user.is_verified && (
-                <div className="flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={handleResendVerification}
-                    disabled={loading}
-                    className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition disabled:opacity-50"
-                  >
-                    {loading ? <ClipLoader size={18} color="#fff" /> : 'Resend Verification Email'}
-                  </button>
-                </div>
-              )}
-
-              <div>
                 <button
                   type="submit"
-                  disabled={isSubmitting || !hasChanges(values, file)}
+                  disabled={isSubmitting || !hasChanges(values)}
                   className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 disabled:opacity-50"
                 >
                   {isSubmitting ? 'Updating...' : 'Update Profile'}

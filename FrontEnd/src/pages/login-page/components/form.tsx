@@ -41,6 +41,7 @@ export default function LoginForm() {
         user: {
           email: data.user.email,
           name: data.user.name,
+          id: data.user.id,
         },
         token: data.token, // Including the token to store in Redux
       };

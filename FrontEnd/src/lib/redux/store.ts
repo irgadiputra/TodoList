@@ -1,7 +1,6 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistReducer, persistStore, Persistor } from "redux-persist";
 import authReducer from "./features/authSlices";
-import eventReducer from "./features/eventSlices";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 
 // Create a noop storage for server-side rendering (SSR)
@@ -30,8 +29,7 @@ const authPersistConfig = {
 
 // Combine reducers, applying persist only to `auth`
 const rootReducer = combineReducers({
-  auth: persistReducer(authPersistConfig, authReducer),
-  event: eventReducer,
+  auth: persistReducer(authPersistConfig, authReducer)
 });
 
 // Create the Redux store

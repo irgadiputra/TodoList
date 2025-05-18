@@ -5,7 +5,7 @@ export async function CreateTodoService(userId: number, param: CreateTodoParam) 
   try {
     const [assignee, creator] = await Promise.all([
       prisma.user.findUnique({ where: { id: Number(param.userId) } }),
-      prisma.user.findUnique({ where: { id: userId } }),
+      prisma.user.findUnique({ where: { id: Number(userId) } }),
     ]);
 
     if (!assignee) throw new Error("Assigned user not found");
@@ -73,37 +73,36 @@ export async function DeleteTodoService(id: number) {
   }
 }
 
+import { Prisma } from '@prisma/client';
+
 export async function GetTodoListService(param: GetTodoListParam) {
   try {
     const page = param.page ?? 1;
     const limit = param.limit ?? 10;
     const skip = (page - 1) * limit;
 
-    const where = {
+    const where: any = {
       ...(param.id && { id: param.id }),
+      ...(param.title && {
+        title: {
+          contains: param.title,
+          mode: Prisma.QueryMode.insensitive,
+        },
+      }),
       ...(param.userId && { userId: param.userId }),
       ...(param.creatorId && { createdById: param.creatorId }),
       ...(param.status && { status: param.status }),
     };
+
     const [todos, total] = await prisma.$transaction([
       prisma.todo.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: "asc" },
+        orderBy: { createdAt: 'asc' },
         include: {
-          user: {
-            select: {
-              name: true,
-              email: true,
-            },
-          },
-          createdBy: {
-            select: {
-              name: true,
-              email: true,
-            },
-          },
+          user: { select: { name: true, email: true } },
+          createdBy: { select: { name: true, email: true } },
         },
       }),
       prisma.todo.count({ where }),

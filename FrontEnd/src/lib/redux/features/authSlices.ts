@@ -5,6 +5,7 @@ import { persistReducer } from 'redux-persist';
 export interface IUser {
   email: string;
   name: string;
+  id: number;
 }
 
 export interface IAuth {
@@ -17,6 +18,7 @@ const initialState: IAuth = {
   user: {
     email: '',
     name: '',
+    id: 0,
   },
   isLogin: false,
   token: null,

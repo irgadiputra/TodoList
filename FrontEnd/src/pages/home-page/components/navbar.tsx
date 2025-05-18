@@ -28,8 +28,6 @@ export default function Navbar() {
   const handleSearchSubmit = () => {
     const params = new URLSearchParams();
     if (search) params.append('query', search);
-    if (location) params.append('location', location);
-    if (status) params.append('status', status);
     router.push(`/search?${params.toString()}`);
     setShowSearch(false);
   };
@@ -69,7 +67,7 @@ export default function Navbar() {
           className="text-white font-bold text-lg cursor-pointer"
           onClick={() => router.push('/')}
         >
-          LoketKita
+          TodosKita
         </div>
 
         {/* Desktop search */}
@@ -78,26 +76,9 @@ export default function Navbar() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Event name..."
+            placeholder="Todos title..."
             className="px-3 py-2 rounded bg-amber-800 text-white focus:outline-none focus:bg-white focus:text-black"
           />
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="Location"
-            className="px-3 py-2 rounded bg-amber-800 text-white focus:outline-none focus:bg-white focus:text-black"
-          />
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="px-3 py-2 rounded bg-amber-800 text-white focus:outline-none focus:bg-white focus:text-black"
-          >
-            <option value="">Status</option>
-            <option value="upcoming">Upcoming</option>
-            <option value="ongoing">Ongoing</option>
-            <option value="past">Past</option>
-          </select>
           <button
             onClick={handleSearchSubmit}
             className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded"
@@ -112,11 +93,11 @@ export default function Navbar() {
             <div className="relative" ref={userMenuRef}>
               <div className="flex gap-6 items-center">
                 <button
-                  onClick={() => router.push('/create-event')}
+                  onClick={() => router.push('/create-todo')}
                   className="flex items-center gap-2 cursor-pointer"
                 >
                   <FaCompass size={20} />
-                  <span>Buat Eventmu!</span>
+                  <span>Create Todo!</span>
                 </button>
                 <button
                   onClick={() => setShowUserMenu((prev) => !prev)}
@@ -137,7 +118,7 @@ export default function Navbar() {
           ) : (
             <>
               <button
-                onClick={() => router.push('/create-event')}
+                onClick={() => router.push('/create-todo')}
                 className="flex items-center gap-2 mr-5"
               >
                 <FaCompass size={20} />
@@ -156,7 +137,7 @@ export default function Navbar() {
         {/* Mobile icons */}
         <div className="md:hidden flex gap-4 items-center">
           <button
-            onClick={() => router.push('/create-event')}
+            onClick={() => router.push('/create-todo')}
             className="text-white"
             aria-label="Create"
           >

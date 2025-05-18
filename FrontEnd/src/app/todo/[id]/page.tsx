@@ -1,7 +1,7 @@
-import EventDetails from '@/pages/event-detail-page';  
+import TodoDetails from '@/pages/todo-detail-page';  
 
 export default function TodoPage() {
   return (
-    <EventDetails />
+    <TodoDetails />
   );
 }

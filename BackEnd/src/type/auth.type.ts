@@ -11,8 +11,6 @@ export type LoginParam = {
 
 export type UpdateProfileParam = {
     name?: string;
-    email?: string;
-    profile_pict?: string;
     new_password?: string;
     old_password?: string; // Required if changing password
 }

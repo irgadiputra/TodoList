@@ -53,12 +53,13 @@ async function LoginService(param: LoginParam) {
     if (!user) throw new HttpError(404, "Email tidak terdaftar");
 
     const checkPass = await compare(param.password, user.password);
-    
+
     if (!checkPass) throw new HttpError(401, "Password Salah");
 
     const payload = {
       email: user.email,
       name: user.name,
+      id: user.id
     }
 
     const token = sign(payload, String(SECRET_KEY), { expiresIn: "1h" });
@@ -69,7 +70,7 @@ async function LoginService(param: LoginParam) {
   }
 }
 
-async function UpdateProfileService(file: Express.Multer.File, param: UpdateProfileParam, id: number) {
+async function UpdateProfileService(param: UpdateProfileParam, id: number) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: id },
@@ -81,12 +82,7 @@ async function UpdateProfileService(file: Express.Multer.File, param: UpdateProf
 
     const updateData: any = {};
 
-    const isExist = await FindUserByEmail(user.email);
-    if (isExist) throw new Error("Email is registered");
-
     if (param.name) updateData.name = param.name;
-    if (param.email) updateData.email = param.email;
-    if (file) updateData.profile_pict = `/public/avatar/${file.filename}`;
 
     if (param.new_password) {
       if (!param.old_password) {

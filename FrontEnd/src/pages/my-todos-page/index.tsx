@@ -99,7 +99,7 @@ const Hero = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchTodos(initialValue);
+      const data = await fetchTodos(initialValue, auth.user);
       setTodos(data);
     } catch (err) {
       console.error('Failed to fetch todos', err);
@@ -150,7 +150,12 @@ const Hero = () => {
 
   return (
     <div className="p-6 text-black bg-gray-50 min-h-screen">
-      {!auth.isLogin &&<h1 className="text-xl font-semibold">Please log in</h1>}
+      {auth.isLogin ? (
+        <h1 className="text-2xl font-bold mb-4">Welcome, {auth.user?.name}!</h1>
+      ) : (
+        <h1 className="text-xl font-semibold">Please log in</h1>
+      )}
+
       {selectedIds.length > 0 && (
         <div className="flex items-center mb-4 space-x-2">
           <label htmlFor="batchStatus">Batch Status:</label>

@@ -4,6 +4,7 @@ import { verify } from "jsonwebtoken";
 import { CreateTodoService, DeleteTodoService, GetTodoListService, UpdateTodoService } from "../services/todo.service";
 import { TodoStatus } from "@prisma/client";
 import { GetTodoListParam } from "@/type/todo.type";
+import { title } from "process";
 
 export async function CreateTodoController(
   req: Request,
@@ -75,14 +76,15 @@ export async function GetTodoListController(
 }
 
 function parseGetTodoListParams(req: Request) : GetTodoListParam {
-  const { page, limit, userId, creatorId, status, id } = req.query;
+  const { page, limit, userId, creatorId, status, id, title } = req.query;
 
   return {
+    title: typeof title === 'string' ? title : undefined,
     id: id ? parseInt(id as string, 10) : undefined,
     page: page ? parseInt(page as string, 10) : undefined,
     limit: limit ? parseInt(limit as string, 10) : undefined,
     userId: userId ? parseInt(userId as string, 10) : undefined,
     creatorId: creatorId ? parseInt(creatorId as string, 10) : undefined,
-    status: status as TodoStatus | undefined, // Optional: validate enum here
+    status: status as TodoStatus | undefined,
   };
 }

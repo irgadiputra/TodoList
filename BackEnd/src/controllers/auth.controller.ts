@@ -61,9 +61,8 @@ export async function UpdateProfileController(
   next: NextFunction
 ) {
   try {
-    const file = req.file as Express.Multer.File;
     const { id } = req.user as IUserReqParam;
-    const data = await UpdateProfileService(file, req.body, id);
+    const data = await UpdateProfileService(req.body, id);
 
     res.status(200).cookie("access_token", data.token).send({
       message: "update profile berhasil",

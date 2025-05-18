@@ -13,13 +13,8 @@ export const decodeTokenToAuth = (token: string): IAuth | null => {
     return {
       user: {
         email: decoded.email,
-        first_name: decoded.first_name,
-        last_name: decoded.last_name,
+        name: decoded.name,
         id: decoded.id,
-        status_role: decoded.status_role,
-        profile_pict: decoded.profile_pict,
-        referal_code: decoded.referal_code,
-        point: decoded.point,
       },
       isLogin: true,
       token,

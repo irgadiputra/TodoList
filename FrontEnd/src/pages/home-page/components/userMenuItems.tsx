@@ -25,8 +25,7 @@ const UserMenuItems = ({ onClose }: { onClose: () => void }) => {
   // Menu items
   const menuItems = [
     { label: 'Profile', path: '/profile' },
-    { label: 'My Event', path: '/my-event' },
-    { label: 'Transaction', path: '/transaction' },
+    { label: 'My Todos', path: '/my-todos' },
   ];
 
   return (
