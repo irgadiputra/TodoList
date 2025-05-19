@@ -4,6 +4,7 @@ import {
   LoginService,
   UpdateProfileService,
   KeepLoginService,
+  GetAllUserEmailsService,
 } from "../services/auth.service";
 import { IUserReqParam } from "../custom";
 import { verify } from "jsonwebtoken";
@@ -85,6 +86,23 @@ export async function KeepLoginController(
     res.status(200).cookie("access_token", data.token).send({
       message: "ReLogin Berhasil",
       user: data.user,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function GetAllUserEmailsController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const data = await GetAllUserEmailsService();
+
+    res.status(200).send({
+      message: "get email Berhasil",
+      data: data,
     });
   } catch (err) {
     next(err);

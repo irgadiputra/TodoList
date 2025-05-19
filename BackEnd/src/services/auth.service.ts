@@ -117,6 +117,15 @@ async function UpdateProfileService(param: UpdateProfileParam, id: number) {
   }
 }
 
+async function GetAllUserEmailsService() {
+  return await prisma.user.findMany({
+    select: {
+      email: true,
+      id: true,
+    },
+  });
+}
+
 async function KeepLoginService(id: number) {
   try {
     const user = await prisma.user.findUnique({
@@ -141,4 +150,5 @@ async function KeepLoginService(id: number) {
 }
 
 
-export { FindUserByEmail, RegisterService, LoginService, UpdateProfileService, KeepLoginService };
+
+export { FindUserByEmail, RegisterService, LoginService, UpdateProfileService, KeepLoginService, GetAllUserEmailsService };

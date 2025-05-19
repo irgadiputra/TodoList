@@ -110,8 +110,11 @@ const Hero = () => {
   };
 
   useEffect(() => {
+    if (!auth.isLogin) {
+      router.push("/login");
+    }
     loadTodoss();
-  }, []);
+  }, [auth.isLogin, router]);
 
   const handleViewDetails = (id: number) => {
     router.push(`/todo/${id}`);

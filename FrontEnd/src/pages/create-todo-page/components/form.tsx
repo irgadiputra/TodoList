@@ -7,8 +7,6 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
-import { TodoStatus } from '@/pages/Hero/components/type';
-import { ITodoCreateFormValues } from './type';
 import { apiUrl } from '@/pages/config';
 
 export interface TodoUpdateFormValues {
@@ -32,6 +30,7 @@ export default function CreateTodoForm() {
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.auth);
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  const [users, setUsers] = useState<{ id: number; email: string }[]>([]);
 
   useEffect(() => {
     if (!auth.isLogin) {
@@ -39,6 +38,19 @@ export default function CreateTodoForm() {
       router.replace('/login');
       return;
     }
+
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get(`${apiUrl}/auth/email`, {
+          headers: { Authorization: `Bearer ${auth.token}` },
+        });
+        setUsers(res.data.data); // Expected: { id, email }[]
+      } catch (err) {
+        toast.error('Failed to fetch users');
+      }
+    };
+
+    fetchUsers();
     setIsAuthorized(true);
   }, [auth.isLogin, router]);
 
@@ -54,11 +66,14 @@ export default function CreateTodoForm() {
 
   const handleSubmit = async (values: TodoUpdateFormValues, { setSubmitting }: any) => {
     try {
-      const res = await axios.post(`${apiUrl}/todo`, values, {
+      const payload = {
+      ...values,
+      userId: parseInt(values.userId as any, 10), // ensure it's a number
+    };
+      const res = await axios.post(`${apiUrl}/todo`, payload, {
         headers: { Authorization: `Bearer ${auth.token}` },
       });
       toast.success('Todo created successfully');
-      console.log(res);
       router.push(`/todo/${res.data.data.id}`);
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to create todo');
@@ -91,8 +106,15 @@ export default function CreateTodoForm() {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-sm font-medium text-slate-700">Assignee (User ID)</label>
-              <Field name="userId" type="number" className="border rounded-md p-2 h-10" />
+              <label className="text-sm font-medium text-slate-700">Assignee (User Email)</label>
+              <Field as="select" name="userId" className="border rounded-md p-2 h-10">
+                <option value="">Select a user</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.email}
+                  </option>
+                ))}
+              </Field>
               <ErrorMessage name="userId" component="div" className="text-red-600 text-xs mt-1" />
             </div>
 
