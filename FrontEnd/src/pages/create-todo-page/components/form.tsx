@@ -8,14 +8,9 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import { apiUrl } from '@/pages/config';
+import { TodoUpdateFormValues } from './type';
 
-export interface TodoUpdateFormValues {
-  title?: string;
-  description?: string;
-  userId: number;
-  startDate: string;
-  endDate: string;
-}
+
 
 const validationSchema = Yup.object({
   title: Yup.string().required('Title is required'),

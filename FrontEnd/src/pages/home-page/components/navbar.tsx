@@ -62,7 +62,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="bg-amber-700 h-16 w-full flex items-center justify-between px-6 relative z-40">
+      <nav className="bg-green-700 h-16 w-full flex items-center justify-between px-6 relative z-40">
         <div
           className="text-white font-bold text-lg cursor-pointer"
           onClick={() => router.push('/')}
@@ -77,11 +77,11 @@ export default function Navbar() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Todos title..."
-            className="px-3 py-2 rounded bg-amber-800 text-white focus:outline-none focus:bg-white focus:text-black"
+            className="px-3 py-2 rounded bg-green-800 text-white focus:outline-none focus:bg-white focus:text-black"
           />
           <button
             onClick={handleSearchSubmit}
-            className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded"
+            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
           >
             <FaSearch />
           </button>
@@ -218,7 +218,7 @@ export default function Navbar() {
           <div className="flex gap-4">
             <button
               onClick={handleSearchSubmit}
-              className="bg-amber-700 text-white px-4 py-2 rounded hover:bg-amber-800"
+              className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800"
             >
               Search
             </button>

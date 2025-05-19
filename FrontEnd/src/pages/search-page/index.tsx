@@ -3,7 +3,6 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { IEvent } from './components/type';
 import { apiUrl } from '../config';
 import { AiOutlineClose } from 'react-icons/ai';
 import { ITodo } from '../Hero/components/type';
@@ -18,7 +17,7 @@ export default function SearchPage() {
   const page = Number(searchParams?.get('page') || 1);
   const limit = 10;
 
-  const [events, setEvents] = useState<ITodo[]>([]);
+  const [todos, setTodos] = useState<ITodo[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -37,9 +36,9 @@ export default function SearchPage() {
   };
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchtodos = async () => {
       try {
-        setLoading(true); // Show loading while fetching events
+        setLoading(true); // Show loading while fetching todo
 
         const res = await axios.get(`${apiUrl}/todo`, {
           params: {
@@ -49,17 +48,17 @@ export default function SearchPage() {
           },
         });
 
-        setEvents(res.data.data.data);
+        setTodos(res.data.data.data);
         setTotalCount(res.data.totalCount);
       } catch (error) {
-        console.error('Failed to fetch events:', error);
-        setEvents([]); // Set empty array in case of failure
+        console.error('Failed to fetch todos:', error);
+        setTodos([]); // Set empty array in case of failure
       } finally {
         setLoading(false); // Set loading to false once fetch is done
       }
     };
 
-    fetchEvents();
+    fetchtodos();
   }, [query, location, status, page]);
 
   const updateQueryParams = (newParams: { [key: string]: string | number }) => {
@@ -95,32 +94,32 @@ export default function SearchPage() {
 
       <h1 className="text-2xl font-bold mb-4 text-center">Search Results</h1>
 
-      {/* Event Listings */}
+      {/* Todos Listings */}
       {loading ? (
         <p className="text-center text-lg">Loading...</p>
-      ) : events.length === 0 ? (
-        <p className="text-center text-lg">No events found.</p>
+      ) : todos.length === 0 ? (
+        <p className="text-center text-lg">No todos found.</p>
       ) : (
         <div className="space-y-4">
-          {events.map((event) => (
-            <div key={event.id} className="p-4 bg-white rounded-lg shadow-md">
+          {todos.map((todo) => (
+            <div key={todo.id} className="p-4 bg-white rounded-lg shadow-md">
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex flex-col justify-between">
-                  <h2 className="text-xl font-semibold text-gray-800">{event.title}</h2>
+                  <h2 className="text-xl font-semibold text-gray-800">{todo.title}</h2>
                   <p className="text-gray-600">
-                    <strong>Status:</strong> {capitalizeFirstLetter(event.status)}
+                    <strong>Status:</strong> {capitalizeFirstLetter(todo.status)}
                   </p>
                   <p className="text-gray-600">
-                    <strong>Date:</strong> {formatDate(event.startDate)} - {formatDate(event.endDate)}
+                    <strong>Date:</strong> {formatDate(todo.startDate)} - {formatDate(todo.endDate)}
                   </p>
                   <p className="text-gray-600">
-                    <strong>Assigne:</strong> {capitalizeFirstLetter(event.user.name)}
+                    <strong>Assigne:</strong> {capitalizeFirstLetter(todo.user.name)}
                   </p>
                   <div className="mt-4">
                     <button
-                      onClick={() => handleViewDetails(event.id)}
+                      onClick={() => handleViewDetails(todo.id)}
                       className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded transition"
-                      aria-label={`View details of ${event.title}`}
+                      aria-label={`View details of ${todo.title}`}
                     >
                       View Details
                     </button>
