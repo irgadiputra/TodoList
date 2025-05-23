@@ -3,8 +3,8 @@ import { TodoStatus } from "@prisma/client";
 export type CreateTodoParam = {
     title: string;
     description?: string;
-    start_date?: string;
-    end_date?: string;
+    startDate?: string;
+    endDate?: string;
     userId: number;       // Assignee
 }
 
@@ -12,8 +12,8 @@ export type UpdateTodoParam = {
     id: number;
     title?: string;
     description?: string;
-    start_date?: string;
-    end_date?: string;
+    startDate?: string;
+    endDate?: string;
     status?: TodoStatus;
     userId?: number;       // Assignee
 };

@@ -15,8 +15,8 @@ export async function CreateTodoService(userId: number, param: CreateTodoParam) 
       data: {
         title: param.title,
         description: param.description,
-        startDate: param.start_date ? new Date(param.start_date) : undefined,
-        endDate: param.end_date ? new Date(param.end_date) : undefined,
+        startDate: param.startDate ? new Date(`${param.startDate}T00:00:00Z`) : undefined,
+        endDate: param.endDate ? new Date(`${param.endDate}T00:00:00Z`) : undefined,
         userId: param.userId,
         createdById: userId,
       },
@@ -39,8 +39,8 @@ export async function UpdateTodoService(param: UpdateTodoParam) {
     const data = {
       ...(param.title && { title: param.title }),
       ...(param.description && { description: param.description }),
-      ...(param.start_date && { startDate: new Date(param.start_date) }),
-      ...(param.end_date && { endDate: new Date(param.end_date) }),
+      ...(param.startDate && { startDate: new Date(`${param.startDate}T00:00:00Z`) }),
+      ...(param.endDate && { endDate: new Date(`${param.endDate}T00:00:00Z`) }),
       ...(param.status && { status: param.status }),
       ...(param.userId && { userId: param.userId }),
     };
